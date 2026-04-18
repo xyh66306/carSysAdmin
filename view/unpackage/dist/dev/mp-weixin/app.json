@@ -1,0 +1,23 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/register/register",
+    "pages/login/login"
+  ],
+  "subPackages": [
+    {
+      "root": "pages/driver",
+      "pages": [
+        "sign/index"
+      ],
+      "name": "driver"
+    }
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "OTC",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#F1F4F9"
+  },
+  "usingComponents": {}
+}

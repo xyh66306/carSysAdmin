@@ -1,0 +1,80 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页",
+				"navigationBarBackgroundColor": "#6051f6",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/register/register",
+			"style": {
+				"navigationBarTitleText": "注册",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"subPackages":[
+		{
+			"root": "pages/driver",
+			"name": "driver",
+			"pages": [
+				{
+					"path": "sign/index",
+					"style": {
+						"navigationBarTitleText": "卸货打卡"
+					}
+				},
+				{
+					"path": "sign/log",
+					"style": {
+						"navigationBarTitleText": "卸货完成记录"
+					}
+				}	,
+				{
+					"path": "sign/details",
+					"style": {
+						"navigationBarTitleText": "卸货完成详情"
+					}
+				}	,
+				{
+					"path": "baoxiao/index",
+					"style": {
+						"navigationBarTitleText": "报销"
+					}
+				}	,
+				{
+					"path": "baoxiao/log",
+					"style": {
+						"navigationBarTitleText": "报销记录"
+					}
+				},
+				{
+					"path": "baoxiao/details",
+					"style": {
+						"navigationBarTitleText": "报销详情"
+					}
+				}				
+			]
+		}	
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "车辆管理",
+		"navigationBarBackgroundColor": "#6051f6",
+		"backgroundColor": "#fff",
+		"app-plus": {
+			"bounce": "none"
+		}
+	},
+	"uniIdRouter": {}
+}
