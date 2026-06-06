@@ -1,76 +1,66 @@
 <template>
 	<view class="content">
-		<u--form labelPosition="top" >
+		<u--form labelPosition="top">
 			<u-form-item labelWidth='80' label="卸货照片" borderBottom>
-				
+				<view class="flexImg">
+					<u--image :showLoading="true" :src="src" width="80px" height="80px" class="img"
+						v-for="(src, index) in details.xiehuo_images" :key="index" mode="aspectFill"></u--image>
+				</view>
 			</u-form-item>
 			<u-form-item labelWidth='80' label="回单照片" borderBottom>
-				
-			</u-form-item>	
+				<view class="flexImg">
+					<u--image :showLoading="true" :src="src" width="80px" height="80px" class="img"
+						v-for="(src, index) in details.huizhou_images" :key="index" mode="aspectFill"></u--image>
+				</view>
+			</u-form-item>
 			<view class="fahuodi_tit flex">
 				<view class="title2 currAdress">始发地</view>
 				<view class="title2">目的地</view>
 			</view>
 			<view class="fahuodi flex">
 				<view class="startCity currAdress">
-					<u--input
-						placeholder="请输入始发地"
-						v-model="start_city"
-						border="bottom"
-					 ></u--input>
+					<u--input placeholder="请输入始发地" disabled inputAlign="center" v-model="details.start_city" border="bottom"></u--input>
 				</view>
 				<view>
-					<u--input
-					  placeholder="请输入目的地"
-					  v-model="end_city"
-					  border="bottom"
-					></u--input>
+					<u--input placeholder="请输入目的地" disabled inputAlign="center" v-model="details.end_city" border="bottom"></u--input>
 				</view>
-			</view>						
+			</view>
 			<u-form-item labelWidth='80' label="业务经理" borderBottom>
-				<u--input
-					v-model="signForm.yewu"
-					disabled
-					disabledColor="#ffffff"
-					placeholder="请选择业务经理"
-					border="none"
-				></u--input>
+				<u--input v-model="details.yewuer" disabled disabledColor="#ffffff" border="none"></u--input>
 			</u-form-item>
 			<u-form-item labelWidth='80' label="毛运费" borderBottom>
-				<u--input
-						v-model="signForm.money"
-						placeholder="请输入毛运费"
-						border="none"
-				></u--input>
-			</u-form-item>	
-					
-				
+				<u--input v-model="details.money" disabled disabledColor="#ffffff" placeholder="请输入毛运费" border="none"></u--input>
+			</u-form-item>
+
+
 		</u--form>
 	</view>
 </template>
 
 <script>
-export default {
-	data() {
-		return {
-			fileListxiehuo: [],
-			fileListhuidan: [],
-			start_city:'',
-			end_city:'',
-			signForm: {
-				yewu: '',
-				xiehuo_images: '',
-				money:''
+	export default {
+		data() {
+			return {
+				details: {}
+			};
+		},
+		onLoad(e) {
+			this.getDetails(e.id);
+		},
+		methods: {
+			getDetails(id) {
+				uni.$u.http.post('/api/sign/detail', {
+					id: id
+				}).then(res => {
+					if (res.code == 1) {
+						this.details = res.data
+					} else {
+						uni.$u.toast(res.msg);
+					}
+				})
 			}
-		};
-	},
-	onLoad() {
-
-	},
-	methods: {
-
-	}
-};
+		}
+	};
 </script>
 
 
@@ -101,21 +91,33 @@ export default {
 		position: relative;
 		font-size: 24rpx !important;
 	}
+
 	.startCity {
 		position: relative;
 	}
+
 	.currAdress::after {
-	  position: absolute;
-	  right:0rpx;
-	  top:50%;
-	  width:2rpx;
-	  height:50rpx;
-	  background-color: rgb(214, 215, 217);
-	  content: "";
-	  transform: translateY(-50%);
-	}	
-	
+		position: absolute;
+		right: 0rpx;
+		top: 50%;
+		width: 2rpx;
+		height: 50rpx;
+		background-color: rgb(214, 215, 217);
+		content: "";
+		transform: translateY(-50%);
+	}
+
 	.button {
 		margin-top: 60rpx;
+	}
+
+	.flexImg {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		margin-top: 20rpx;
+		.img {
+			margin-right: 10rpx;
+		}
 	}
 </style>

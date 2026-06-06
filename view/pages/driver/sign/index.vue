@@ -28,12 +28,10 @@
 					  border="bottom"
 					></u--input>
 				</view>
-			</view>
-			<u-form-item labelWidth='80' label="业务经理" borderBottom>
+			</view> 
+			<u-form-item labelWidth='80' label="业务经理" @click="yewuShow()" borderBottom>
 				<u--input
-					v-model="signForm.yewu"
-					disabled
-					disabledColor="#ffffff"
+					v-model="yewuer"
 					placeholder="请选择业务经理"
 					border="none"
 				></u--input>
@@ -49,6 +47,7 @@
 		<view class="button">
 			<u-button type="warning" @click="submit" shape="circle">确认提交</u-button>
 		</view>
+		<u-picker :show="yewuLstshow" :columns="yewuLst" @confirm="confirm" @cancel="close" keyName="nickname"></u-picker>
 	</view>
 </template>
 
@@ -56,36 +55,78 @@
 	export default {
 		data() {
 			return {
+				yewuer:'',
+				yewuLstshow:false,
+				yewuLst:[],
 				fileListxiehuo: [],
 				fileListhuidan: [],
 				start_city:'',
 				end_city:'',
 				signForm: {
+					yewu_id:'',
 					yewu: '',
-					xiehuo_images: '',
 					money:''
 				},
-				rules: {
-					"money":{
-						
-					}
-				},
+				rules: {},
 			};
 		},
 		onLoad() {
-
+			this.getYewuLst();
 		},
 		methods: {
+			confirm(e) {
+				this.yewuer = e.value[0].nickname
+				this.signForm.yewu_id = e.value[0].id
+                this.yewuShow()
+			},	
+			close(){
+				this.yewuLstshow = false
+			},		
+			yewuShow(){
+				this.yewuLstshow = !this.yewuLstshow
+			},
+			getYewuLst(){
+				uni.$u.http.post('/api/user/getManagerList').then(res => {
+					if (res.code == 1) {
+						this.yewuLst = [res.data];
+					} else {
+						uni.$u.toast(res.msg);
+					}
+				})
+			},
 			submit(){
-				this.$refs.signForm.validate().then(res => {
-					uni.$u.http.post('/api/user/login', this.loginForm).then(res => {
-						if (res.code == 1) {
-							uni.$u.toast(res.msg);
-							uni.navigateBack()
-						} else {
-							uni.$u.toast(res.msg);
-						}
-					})
+				if(this.fileListxiehuo.length==0){
+					uni.$u.toast('请上传卸货照片');
+						return false;
+				}
+				if(this.fileListhuidan.length==0){
+					uni.$u.toast('请上传回单照片');
+					return false;
+				}
+				if(this.start_city==''){
+					uni.$u.toast('请输入始发地');
+					return false;
+				}
+				if(this.end_city==''){
+					uni.$u.toast('请输入目的地');
+					return false;
+				}
+				if(!this.signForm.yewu_id){
+					uni.$u.toast('请选择业务经理');
+					return false;
+				}
+				this.signForm.start_city = this.start_city;
+				this.signForm.end_city = this.end_city;
+				this.signForm.xiehuo_images = this.fileListxiehuo.map(item=>item.url).join(',');
+				this.signForm.huizhou_images = this.fileListhuidan.map(item=>item.url).join(',');
+				
+				uni.$u.http.post('/api/sign/add', this.signForm).then(res => {
+					if (res.code == 1) {
+						uni.$u.toast(res.msg);
+						uni.navigateBack()
+					} else {
+						uni.$u.toast(res.msg);
+					}
 				})
 			},
 			// 删除图片
@@ -106,9 +147,6 @@
 				});
 				for (let i = 0; i < lists.length; i++) {
 					const result = await this.uploadFilePromise(lists[i].url);
-					
-					console.log(result)
-					
 					let item = this[`fileList${event.name}`][fileListLen];
 					this[`fileList${event.name}`].splice(
 						fileListLen,

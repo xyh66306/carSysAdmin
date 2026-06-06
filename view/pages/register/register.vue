@@ -1,22 +1,26 @@
 <template>
 	<view class="page">
-		<u-navbar
-			title="注册"
-			@rightClick="rightClick"
-			:bgColor="bgColor"
-			:titleStyle ="titleStyle"
-			:autoBack="true"
-			leftIconColor="#fff"
-		>
+		<u-navbar title="注册" @rightClick="rightClick" :bgColor="bgColor" :titleStyle="titleStyle" :autoBack="true"
+			leftIconColor="#fff">
 		</u-navbar>
 		<view class="form">
 			<u--form labelPosition="top" :model="loginForm" :rules="rules" ref="loginForm" labelWidth="auto">
-				<u-form-item label="类型"  borderBottom  @tap="typeShow=true">
-					<u--input v-model="group_name" border="none" placeholder="请选择用户类型" suffixIcon="arrow-right"></u--input>
-				</u-form-item>					
-				<u-form-item label="车牌号：" prop="carnums" borderBottom ref="nickname" v-show="showCarNums"  @tap="plateShow=true">
-					<u--input v-model="loginForm.carnums" border="none" placeholder="请输入车牌号" suffixIcon="arrow-right"></u--input>
-				</u-form-item>							
+				<u-form-item label="归属城市" borderBottom @tap="typeShow=true">
+					<u--input v-model="city_name" border="none" placeholder="请选择归属城市"
+						suffixIcon="arrow-right"></u--input>
+				</u-form-item>
+				<u-form-item label="类型" borderBottom>
+					<u-radio-group v-model="radiovalue1" placement="row">
+						<u-radio :customStyle="{marginRight: '8px'}" v-for="(item, index) in radiolist1" :key="index"
+							:label="item.name" :name="item.value" @change="radioChange">
+						</u-radio>
+					</u-radio-group>
+				</u-form-item>
+				<u-form-item label="车牌号：" prop="carnums" borderBottom ref="nickname" v-show="showCarNums"
+					@tap="plateShow=true">
+					<u--input v-model="loginForm.carnums" border="none" placeholder="请输入车牌号"
+						suffixIcon="arrow-right"></u--input>
+				</u-form-item>
 				<u-form-item label="用户名" prop="nickname" borderBottom ref="nickname">
 					<u--input v-model="loginForm.nickname" border="none" placeholder="请输入用户名"></u--input>
 				</u-form-item>
@@ -32,33 +36,46 @@
 		</view>
 		<u-button type="primary" @click="register" shape="circle">注册</u-button>
 		<view class="goLogin font24" @click="goTologin()">已有账户，<text class="loginFont">登录</text>一个</view>
-		<plate-input v-if="plateShow" :plate="plateNo" @export="setPlate" @close="plateShow=false" />
-		<u-picker :show="typeShow" :columns="columns" @change="changeHandler" @confirm="confirm"></u-picker>
-		
+		<plate-input v-if="plateShow" :plate="plateNo" @type="carType" @export="setPlate" @close="plateShow=false" />
+		<u-picker :show="typeShow" keyName="cityname" :columns="openCity" @cancel="cancel" @confirm="confirm"></u-picker>
+
 	</view>
 </template>
 
 <script>
 	import plateInput from '@/components/uni-plate-input/uni-plate-input.vue'
 	export default {
-        components: {
-            plateInput
-        },		
+		components: {
+			plateInput
+		},
 		data() {
 			return {
+				radiolist1: [
+					{
+						name: '司机',
+						value:1,
+						disabled: false
+					},
+					{
+						name: '业务员',
+						value:2,
+						disabled: false
+					},
+				],
+				radiovalue1: 1,
 				typeShow: false,
-                columns: [
-                    ['司机', '业务员']
-                ],				
-                plateNo:'',
-                plateShow:false,				
-				titleStyle:"color:#fff",
-				showCarNums:false,
-				bgColor:"#6051f6",
-				group_name:'',
+				openCity: [],
+				plateNo: '',
+				plateShow: false,
+				titleStyle: "color:#fff",
+				showCarNums: true,
+				bgColor: "#6051f6",
+				city_name: '',
 				loginForm: {
-					group_id:'',
-					carnums:"",
+					youdian:'',	//1油车 2电车
+					city_id:'',
+					group_id: 1,
+					carnums: "",
 					nickname: '',
 					mobile: '',
 					password: '',
@@ -93,54 +110,62 @@
 				tips: '',
 			}
 		},
+		onLoad() {
+			this.getOpenCity();
+		},
 		methods: {
-			changeHandler(e){
-				const {
-					columnIndex,
-					value,
-					values, // values为当前变化列的数组内容
-					index,
-					// 微信小程序无法将picker实例传出来，只能通过ref操作
-					picker = this.$refs.uPicker
-				} = e
-				console.log(e.value)
-				
+			radioChange(n) {
+				if (n == 1) {
+					this.showCarNums = true
+				} else {
+					this.showCarNums = false
+				}
+				this.loginForm.group_id =n
 			},
 			confirm(e) {
-				let group_id =  parseInt(e.indexs)+1			
-				this.loginForm.group_id =group_id	
-				if(group_id==1){
-					this.showCarNums = true
-				}else{
-					this.showCarNums = false
-				}		
-				this.group_name = e.value[0]
-                this.typeShow = false
-			},			
-            setPlate(plate){
-                if(plate.length >= 7) this.loginForm.carnums = plate
-                this.plateShow = false
-            },			
-			goTologin(){
+				this.loginForm.city_id = e.value[0]['id']
+				this.city_name = e.value[0]['cityname']
+				this.typeShow = false
+			},
+			cancel(){
+				this.typeShow = false
+			},
+			carType(e){
+				this.loginForm.youdian = e
+			},
+			setPlate(plate) {
+				if (plate.length >= 7) this.loginForm.carnums = plate
+				this.plateShow = false
+			},
+			goTologin() {
 				uni.navigateBack()
 			},
+			getOpenCity(){
+				uni.$u.http.post('/api/city/index', {}).then(res => {
+					if (res.code == 1) {						
+						this.openCity = [res.data]
+					}
+				}).catch(res => {
+					uni.$u.toast(res.msg);
+				});
+			},
 			register() {
-				if(!this.loginForm.group_id){
+				if (!this.loginForm.group_id) {
 					return uni.$u.toast('请选择用户组别');
 				}
-				if(this.loginForm.group_id==1 && !this.loginForm.carnums){
+				if (this.loginForm.group_id == 1 && !this.loginForm.carnums) {
 					return uni.$u.toast('请输入车牌号');
 				}
 				this.$refs.loginForm.validate().then(res => {
 					uni.$u.http.post('/api/user/register', this.loginForm).then(res => {
-						if(res.code==1){
+						if (res.code == 1) {
 							uni.$u.toast('注册成功，审核中');
 							uni.redirectTo({
-								url:"/pages/login/login"
-							})	
-						}else{
+								url: "/pages/login/login"
+							})
+						} else {
 							uni.$u.toast(res.msg);
-						}					
+						}
 					}).catch(res => {
 						uni.$u.toast(res.msg);
 						console.log(res);
@@ -155,7 +180,6 @@
 </script>
 
 <style lang="scss" scoped>
-	
 	.page {
 		width: 100vw;
 		min-height: 100vh;
@@ -179,17 +203,17 @@
 	::v-deep .u-upload__button {
 		background-color: #fff;
 	}
-	.loginbtn {
-		
-	}
+
+	.loginbtn {}
+
 	.goLogin {
 		margin-top: 40rpx;
-		padding-left:20rpx;
+		padding-left: 20rpx;
 		text-align: left;
 		font-size: 28rpx;
 	}
-	
+
 	.loginFont {
-		color:$u-primary
+		color: $u-primary
 	}
 </style>

@@ -1,45 +1,90 @@
 <template>
 	<view class="page">
-		<view class="items" @click="gotourl('/pages/driver/sign/index')">
-			<view class="left">
-				<view class="title">卸货打卡</view>
-				<view class="desc">{{timeView}}</view>
+		<template v-if="userInfo.group_id==1">
+			<view class="items" @click="gotourl('/pages/driver/sign/index')">
+				<view class="left">
+					<view class="title">卸货打卡</view>
+					<view class="desc">{{timeView}}</view>
+				</view>
+				<view class="right">
+					<image src="/static/image/ybg_01.jpg"></image>
+				</view>
 			</view>
-			<view class="right">
-				<image src="/static/image/ybg_01.jpg"></image>
+			
+			<view class="items" @click="gotourl('/pages/driver/sign/log')">
+				<view class="left">
+					<view class="title">卸货完成记录（司机账单）</view>
+					<view class="desc red">*司机主动打卡才能生成账单</view>
+				</view>
+				<view class="right">
+					<image src="/static/image/ybg_03.jpg"></image>
+				</view>
 			</view>
-		</view>
+			
+			<view class="items" @click="gotourl('/pages/driver/baoxiao/index')">
+				<view class="left">
+					<view class="title">报销</view>
+					<view class="desc">当日产生，必须当天报销</view>
+				</view>
+				<view class="right">
+					<image src="/static/image/ybg_02.jpg"></image>
+				</view>
+			</view>
+			
+			<view class="items" @click="gotourl('/pages/driver/baoxiao/log')">
+				<view class="left">
+					<view class="title">报销记录</view>
+					<view class="desc"></view>
+				</view>
+				<view class="right">
+					<image src="/static/image/ybg_04.jpg"></image>
+				</view>
+			</view>
+		</template>
+		<template v-else>
+			<view class="items" @click="gotourl('/pages/yewu/carer/list')">
+				<view class="left">
+					<view class="title">配载车辆(司机)</view>
+					<view class="desc"></view>
+				</view>
+				<view class="right">
+					<image src="/static/image/ybg_01.jpg"></image>
+				</view>
+			</view>
 
-		<view class="items" @click="gotourl('/pages/driver/sign/log')">
-			<view class="left">
-				<view class="title">卸货完成记录（司机账单）</view>
-				<view class="desc red">*司机主动打卡才能生成账单</view>
+			<view class="items" @click="gotourl('/pages/yewu/yunyin/carer')">
+				<view class="left">
+					<view class="title">运营数据</view>
+					<view class="desc red"></view>
+				</view>
+				<view class="right">
+					<image src="/static/image/ybg_03.jpg"></image>
+				</view>
 			</view>
-			<view class="right">
-				<image src="/static/image/ybg_03.jpg"></image>
-			</view>
-		</view>
 
-		<view class="items" @click="gotourl('/pages/driver/baoxiao/index')">
-			<view class="left">
-				<view class="title">报销</view>
-				<view class="desc">当日产生，必须当天报销</view>
+			<view class="items" @click="gotourl('/pages/yewu/kaidan/index')">
+				<view class="left">
+					<view class="title">受理开单</view>
+					<view class="desc">当日产生，必须当天报销</view>
+				</view>
+				<view class="right">
+					<image src="/static/image/ybg_02.jpg"></image>
+				</view>
 			</view>
-			<view class="right">
-				<image src="/static/image/ybg_02.jpg"></image>
-			</view>
-		</view>
 
-		<view class="items" @click="gotourl('/pages/driver/baoxiao/log')">
-			<view class="left">
-				<view class="title">报销记录</view>
-				<view class="desc"></view>
+			<view class="items" @click="gotourl('/pages/yewu/baoxiao/log')">
+				<view class="left">
+					<view class="title">未核销订单</view>
+					<view class="desc"></view>
+				</view>
+				<view class="right">
+					<image src="/static/image/ybg_04.jpg"></image>
+				</view>
 			</view>
-			<view class="right">
-				<image src="/static/image/ybg_04.jpg"></image>
-			</view>
-		</view>
-
+		</template>
+		<view class="logout" @click="logout">
+			退出
+		</view>	
 	</view>
 </template>
 
@@ -48,6 +93,7 @@
 		data() {
 			return {
 				timeView:'',
+				userInfo:{},
 			}
 		},		
 		onLoad() {},
@@ -62,6 +108,12 @@
 			this.stopTimer(); // 页面卸载时清除定时器
 		},		
 		methods: {
+			logout(){
+				uni.clearStorageSync();
+				uni.redirectTo({
+					url: '/pages/login/login'
+				})
+			},
 			getUserInfo() {
 				uni.$u.http.post('/api/user/index').then(res => {
 					if (res.code == 1) {

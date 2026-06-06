@@ -65,7 +65,44 @@
 					}
 				}				
 			]
-		}	
+		},
+		{
+			"root": "pages/yewu",
+			"name": "yewu",
+			"pages": [
+				{
+					"path": "carer/list",
+					"style": {
+						"navigationBarTitleText": "司机列表"
+					}
+				},
+				{
+					"path": "carer/add",
+					"style": {
+						"navigationBarTitleText": "司机列表"
+					}
+				},				
+				{
+					"path": "carer/details",
+					"style": {
+						"navigationBarTitleText": "卸货完成详情"
+					}
+				},
+				{
+					"path": "yunyin/carer",
+					"style": {
+						"navigationBarTitleText": "司机列表"
+					}
+				},
+				{
+					"path": "kaidan/index",
+					"style": {
+						"navigationBarTitleText": "受理开单",
+						"navigationStyle": "custom"
+					}
+				}				
+			]
+		}				
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

@@ -192,6 +192,7 @@
 				} else {
 					this.currentInputValue = ['', '', '', '', '', '', '', '']
 				}
+				this.$emit('type', parseInt(value))
 			},
 			chooseKey(e) {
 				const {
@@ -221,6 +222,7 @@
 					title: '请输入完整的车牌号码!',
 					icon: 'none'
 				})
+				this.$emit('type', this.type)
 				this.$emit('export', plate)
 			},
 			changeKeyboardHeight() {
